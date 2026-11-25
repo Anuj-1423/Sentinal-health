@@ -1,0 +1,49 @@
+# Local Python environment and bytecode
+.venv/
+.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest-tmp/
+pytest-cache-files-*/
+
+# Local secrets and editor state
+.env
+.vscode/
+.idea/
+.ipynb_checkpoints/
+
+# Previous Streamlit configuration and experiment workspace
+.streamlit/
+configs/
+run_experiments.py
+requirements-experiments.txt
+sentinel_health/data.py
+sentinel_health/training.py
+sentinel_health/experiments.py
+sentinel_health/risk.py
+tests/test_healthcare.py
+
+# Keep only the CKD artifacts required by the dashboard
+artifacts/*
+!artifacts/ckd/
+artifacts/ckd/*
+!artifacts/ckd/ckd_model.joblib
+!artifacts/ckd/training_report.json
+!artifacts/ckd/model_comparison.csv
+!artifacts/ckd/feature_importance.csv
+!artifacts/ckd/feature_drift.csv
+!artifacts/ckd/data_quality.csv
+!artifacts/ckd/outlier_review.csv
+!artifacts/ckd/model_card.md
+!artifacts/ckd/model_registry.json
+!artifacts/ckd/precision_recall.png
+!artifacts/ckd/roc_curve.png
+!artifacts/ckd/confusion_matrix.png
+!artifacts/ckd/calibration.png
+
+# Runtime data and logs
+*.db
+*.db-shm
+*.db-wal
+*.log

@@ -1,0 +1,12 @@
+{
+  "active_version": "0462971aecbd963ec581",
+  "versions": [
+    {
+      "version": "0462971aecbd963ec581",
+      "model_name": "random_forest_d4_leaf2_balanced",
+      "artifact": "artifacts/ckd/ckd_model.joblib",
+      "threshold": 0.31514727906195883,
+      "status": "active"
+    }
+  ]
+}

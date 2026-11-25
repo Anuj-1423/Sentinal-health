@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fa">
+  <title>{{ title }} · Sentinel Health</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='plotly.min.js') }}"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="{{ url_for('overview') }}"><span class="brand-mark">S</span><span><b>SENTINEL HEALTH</b><small>CKD CLASSIFICATION</small></span></a>
+      <div class="status"><i></i>{{ 'MODEL READY' if model_ready else 'MODEL NOT TRAINED' }}</div>
+      <nav aria-label="Main navigation">
+        {% for href, label in nav %}<a class="nav-link {{ 'active' if active == href else '' }}" href="{{ href }}"><span class="nav-dot"></span>{{ label }}</a>{% endfor %}
+      </nav>
+      <div class="sidebar-foot"><span>LOCAL DEVELOPMENT</span><p>Data · {{ '{:,}'.format(row_count) }} records</p></div>
+    </aside>
+    <main class="main-area">
+      <header class="topbar"><button class="menu-toggle" type="button" aria-label="Toggle navigation" onclick="document.body.classList.toggle('nav-open')">☰</button><span>Sentinel Health <span class="slash">/</span> Research workspace</span><span class="topbar-tag">LOCAL DEMO</span></header>
+      <div class="content-wrap">
+        <h1>{{ title }}</h1>
+        <p class="page-description">{{ description }}</p>
+        {% if notice %}<div class="notice"><span class="notice-icon">i</span><div>{{ notice }}</div></div>{% endif %}
+        {% if error %}<div class="notice {{ 'success' if 'complete.' in error else 'error' }}">{{ error }}</div>{% endif %}
+        {% if metrics %}<section class="metric-grid" aria-label="Key metrics">{% for item in metrics %}<article class="metric-card"><span>{{ item.label }}</span><strong>{{ item.value }}</strong>{% if item.note %}<small>{{ item.note }}</small>{% endif %}</article>{% endfor %}</section>{% endif %}
+        {% if extra %}<div class="extra-content">{{ extra|safe }}</div>{% endif %}
+        {% if charts %}<section class="chart-grid">{% for item in charts %}<article class="panel chart-panel"><h2>{{ item.title }}</h2><div class="plotly-chart">{{ item.html }}</div></article>{% endfor %}</section>{% endif %}
+        {% if tables %}<section class="table-stack">{% for item in tables %}<article class="panel table-panel"><h2>{{ item.title }}</h2><div class="table-scroll">{{ item.html }}</div></article>{% endfor %}</section>{% endif %}
+        <footer class="footer">Sentinel Health · Local research demonstration · Not for clinical use</footer>
+      </div>
+    </main>
+  </div>
+  <script>
+  window.addEventListener('load', function () { if (window.Plotly) document.querySelectorAll('.plotly-chart .js-plotly-plot').forEach(function (el) { Plotly.Plots.resize(el); }); });
+  </script>
+</body>
+</html>

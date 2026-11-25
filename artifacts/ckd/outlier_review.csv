@@ -1,0 +1,12 @@
+feature,iqr_flagged,rate
+age,10,0.025
+bp,36,0.09
+bgr,34,0.085
+bu,38,0.095
+sc,51,0.1275
+sod,16,0.04
+pot,4,0.01
+hemo,1,0.0025
+pcv,1,0.0025
+wbcc,10,0.025
+rbcc,1,0.0025
