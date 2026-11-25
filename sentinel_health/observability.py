@@ -1,12 +1,22 @@
 """Local, privacy-minimized prediction telemetry for Sentinel Health."""
 from __future__ import annotations
 from datetime import datetime, timezone
-import os, sqlite3
+import logging, os, sqlite3, tempfile
 from pathlib import Path
 from typing import Any
 import pandas as pd
 ROOT=Path(__file__).resolve().parents[1]
-DB_PATH=Path(os.getenv("SENTINEL_HEALTH_DB",str(ROOT/"artifacts"/"ckd"/"ckd_events.db")))
+_VERCEL = os.getenv("VERCEL") == "1" or bool(os.getenv("VERCEL_ENV"))
+_TMP_ROOT = Path(tempfile.gettempdir()).resolve()
+_LOCAL_DB = ROOT/"artifacts"/"ckd"/"ckd_events.db"
+_configured_db = os.getenv("SENTINEL_HEALTH_DB")
+if _VERCEL:
+    _candidate_db = Path(_configured_db).resolve() if _configured_db else None
+    # Vercel's deployment bundle is read-only; keep SQLite telemetry in /tmp.
+    DB_PATH = (_candidate_db if _candidate_db and _candidate_db.is_relative_to(_TMP_ROOT)
+               else _TMP_ROOT/"sentinel-health"/"ckd_events.db")
+else:
+    DB_PATH=Path(_configured_db or str(_LOCAL_DB))
 
 def _connect():
     DB_PATH.parent.mkdir(parents=True,exist_ok=True)
@@ -25,6 +35,14 @@ def log_prediction(*,model_version:str,probability:float|None,threshold:float|No
         cur=c.execute("INSERT INTO prediction_events(created_at,model_version,probability,threshold,risk_band,latency_ms,source,success,error_type) VALUES(?,?,?,?,?,?,?,?,?)",
           (datetime.now(timezone.utc).isoformat(),model_version,probability,threshold,risk_band,float(latency_ms),source,int(success),error_type))
         return int(cur.lastrowid)
+
+def record_prediction(**kwargs)->int|None:
+    """Record telemetry when possible without allowing storage to break scoring."""
+    try:
+        return log_prediction(**kwargs)
+    except Exception:
+        logging.getLogger(__name__).exception("Prediction telemetry could not be recorded")
+        return None
 
 def recent_events(limit:int=500)->pd.DataFrame:
     with _connect() as c:return pd.read_sql_query("SELECT * FROM prediction_events ORDER BY id DESC LIMIT ?",c,params=(int(limit),))

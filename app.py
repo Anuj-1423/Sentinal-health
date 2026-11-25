@@ -18,7 +18,7 @@ from sentinel_health.ckd_data import (
     make_features, profile_dataset,
 )
 from sentinel_health.ckd_training import ARTIFACTS, run_training
-from sentinel_health.observability import log_prediction, recent_events, telemetry_summary
+from sentinel_health.observability import record_prediction, recent_events, telemetry_summary
 from sentinel_health.registry import list_versions
 
 ROOT = Path(__file__).resolve().parent
@@ -214,8 +214,8 @@ def prediction():
             elapsed = (time.perf_counter() - started) * 1000
             predicted = "ckd" if probability >= model.threshold else "notckd"
             source_name = "dashboard-manual" if manual_mode else "dashboard-row"
-            log_prediction(model_version=model.model_version, probability=probability, threshold=model.threshold,
-                           risk_band=predicted, latency_ms=elapsed, source=source_name)
+            record_prediction(model_version=model.model_version, probability=probability, threshold=model.threshold,
+                              risk_band=predicted, latency_ms=elapsed, source=source_name)
             display_class = "CKD" if predicted == "ckd" else "NOT CKD"
             result = [metric("Predicted class", display_class),
                       metric("Estimated CKD probability", f"{probability:.1%}"),
